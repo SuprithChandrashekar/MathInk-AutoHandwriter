@@ -1,0 +1,12 @@
+const { chromium } = require('playwright');
+(async () => {
+  const browser = await chromium.launch();
+  const page = await browser.newPage();
+  page.on('console', msg => console.log(msg.text()));
+  await page.goto('http://localhost:8000');
+  await page.evaluate(() => {
+    console.log(Object.keys(MathJax.startup.document));
+    console.log(MathJax.startup.document.inputJax);
+  });
+  await browser.close();
+})();

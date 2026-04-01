@@ -104,7 +104,17 @@ const Pagination = (() => {
       const block = blocks[i];
       const blockHeight = measureElementHeight(block, contentWidth);
 
-      if (usedHeight + blockHeight <= contentHeight) {
+      // Check for auto page break on Problem headings (e.g. ### Problem 1)
+      let forceNewPage = false;
+      if (appState.autoPageBreak && usedHeight > 0) {
+        if (block.tagName.toLowerCase().match(/^h[1-6]$/)) {
+          if (block.textContent.trim().toLowerCase().includes('problem')) {
+            forceNewPage = true;
+          }
+        }
+      }
+
+      if (!forceNewPage && usedHeight + blockHeight <= contentHeight) {
         // Fits on current page
         currentContent.appendChild(block.cloneNode(true));
         usedHeight += blockHeight;

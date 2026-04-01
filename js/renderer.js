@@ -31,7 +31,7 @@ const Renderer = (() => {
   }
 
   /**
-   * Render math with MathJax and apply ink color to SVGs.
+   * Render math with MathJax and apply ink color to CHTML.
    */
   async function renderMath(container, inkColor) {
     if (!window.MathJax || !MathJax.typesetPromise) {
@@ -41,11 +41,10 @@ const Renderer = (() => {
 
     await MathJax.typesetPromise([container]);
 
-    // Tint MathJax SVGs to match ink color
-    const svgs = container.querySelectorAll('mjx-container svg');
-    svgs.forEach(svg => {
-      svg.style.fill = inkColor;
-      svg.style.color = inkColor;
+    // Tint MathJax CHTML elements to match ink color
+    const mathElements = container.querySelectorAll('mjx-container');
+    mathElements.forEach(el => {
+      el.style.color = inkColor;
     });
   }
 
