@@ -1,0 +1,130 @@
+/* ===== Page Element ===== */
+.page {
+  position: relative;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  overflow: hidden;
+}
+
+.page-content-area {
+  position: relative;
+  z-index: 1;
+}
+
+/* ===== Ruled Paper ===== */
+.paper-ruled {
+  background-image:
+    /* Red margin line */
+    linear-gradient(to right, transparent 71px, #e88e8e 71px, #e88e8e 72px, transparent 72px),
+    /* Horizontal ruled lines */
+    repeating-linear-gradient(
+      to bottom,
+      transparent,
+      transparent 31px,
+      #c8daf0 31px,
+      #c8daf0 32px
+    );
+  background-position: 0 0;
+}
+
+/* ===== Grid Paper ===== */
+.paper-grid {
+  background-image:
+    repeating-linear-gradient(
+      to right,
+      #d0e8f0 0px,
+      #d0e8f0 1px,
+      transparent 1px,
+      transparent 20px
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      #d0e8f0 0px,
+      #d0e8f0 1px,
+      transparent 1px,
+      transparent 20px
+    );
+}
+
+/* ===== Dotted Paper ===== */
+.paper-dotted {
+  background-image:
+    radial-gradient(circle, #c0c0c0 0.8px, transparent 0.8px);
+  background-size: 20px 20px;
+}
+
+/* ===== Blank Paper ===== */
+.paper-blank {
+  background: #fff;
+}
+
+/* ===== Custom Background ===== */
+.paper-custom {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* ===== Content Styling inside Pages ===== */
+.page-content-area h1 {
+  font-size: 1.8em;
+  margin-bottom: 0.4em;
+  border-bottom: none;
+}
+
+.page-content-area h2 {
+  font-size: 1.4em;
+  margin-bottom: 0.3em;
+}
+
+.page-content-area h3 {
+  font-size: 1.2em;
+  margin-bottom: 0.3em;
+}
+
+.page-content-area p {
+  margin-bottom: 0.5em;
+}
+
+.page-content-area ul,
+.page-content-area ol {
+  margin-left: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+.page-content-area li {
+  margin-bottom: 0.2em;
+}
+
+.page-content-area strong {
+  font-weight: bold;
+}
+
+.page-content-area em {
+  font-style: italic;
+}
+
+/* ===== Math Elements ===== */
+.math-inline {
+  display: inline;
+  vertical-align: middle;
+}
+
+.math-block {
+  display: block;
+  text-align: center;
+  margin: 0.6em 0;
+}
+
+/* Tint MathJax SVG to match ink color */
+.page-content-area mjx-container svg {
+  fill: currentColor;
+}
+
+/* ===== Embedded Images ===== */
+.page-content-area img.embedded-image {
+  max-width: 100%;
+  height: auto;
+  margin: 0.5em 0;
+  display: block;
+}

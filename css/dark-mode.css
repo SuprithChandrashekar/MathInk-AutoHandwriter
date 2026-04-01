@@ -1,0 +1,131 @@
+/* ===== Dark Mode Overrides ===== */
+/* Only affects UI chrome — paper preview stays light */
+
+body.dark-mode {
+  background: #1a1a2e;
+  color: #e0e0e0;
+}
+
+body.dark-mode #toolbar {
+  background: #16213e;
+  border-bottom-color: #0f3460;
+}
+
+body.dark-mode .toolbar-group {
+  border-right-color: #0f3460;
+}
+
+body.dark-mode .toolbar-label {
+  color: #8899aa;
+}
+
+body.dark-mode .toolbar-btn {
+  background: #1a1a3e;
+  color: #ccc;
+  border-color: #334;
+}
+
+body.dark-mode .toolbar-btn:hover {
+  background: #252550;
+  border-color: #558;
+}
+
+body.dark-mode .toolbar-btn.primary {
+  background: #2563eb;
+  color: #fff;
+  border-color: #1d4ed8;
+}
+
+body.dark-mode #toolbar select,
+body.dark-mode #toolbar input[type="number"] {
+  background: #1a1a3e;
+  color: #ccc;
+  border-color: #334;
+}
+
+body.dark-mode #input-panel {
+  background: #16213e;
+  border-right-color: #0f3460;
+}
+
+body.dark-mode #text-input {
+  background: #16213e;
+  color: #d0d0e0;
+}
+
+body.dark-mode #text-input::placeholder {
+  color: #556;
+}
+
+body.dark-mode #preview-panel {
+  background: #111128;
+}
+
+body.dark-mode #preview-header {
+  background: #16213e;
+  border-bottom-color: #0f3460;
+  color: #8899aa;
+}
+
+body.dark-mode #equation-editor-panel {
+  background: #1a1a3e;
+  border-top-color: #0f3460;
+}
+
+body.dark-mode #mathquill-field {
+  background: #222244;
+  border-color: #334;
+  color: #ddd;
+}
+
+body.dark-mode #latex-preview {
+  background: #111128;
+  color: #889;
+}
+
+body.dark-mode .symbol-btn {
+  background: #1a1a3e;
+  border-color: #334;
+  color: #ccc;
+}
+
+body.dark-mode .symbol-btn:hover {
+  background: #252560;
+  border-color: #669;
+}
+
+body.dark-mode .symbol-category h4 {
+  color: #667;
+}
+
+body.dark-mode .mode-btn {
+  background: #1a1a3e;
+  color: #aaa;
+  border-color: #334;
+}
+
+body.dark-mode .mode-btn.active {
+  background: #2563eb;
+  color: #fff;
+}
+
+body.dark-mode #close-equation-editor {
+  color: #889;
+}
+
+/* Scrollbar dark mode */
+body.dark-mode #preview-panel::-webkit-scrollbar-track {
+  background: #111128;
+}
+
+body.dark-mode #preview-panel::-webkit-scrollbar-thumb {
+  background: #334;
+}
+
+body.dark-mode #symbol-palette::-webkit-scrollbar-track {
+  background: #1a1a3e;
+}
+
+body.dark-mode #symbol-palette::-webkit-scrollbar-thumb {
+  background: #334;
+}

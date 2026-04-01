@@ -1,0 +1,145 @@
+/* ===== Equation Editor Panel ===== */
+#equation-editor-panel {
+  border-top: 1px solid #ddd;
+  background: #fafafa;
+  padding: 12px;
+}
+
+#equation-editor-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+#equation-editor-header span {
+  flex: 1;
+}
+
+#close-equation-editor {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #666;
+  padding: 0 4px;
+}
+
+#close-equation-editor:hover {
+  color: #333;
+}
+
+/* Insert mode toggle */
+#insert-mode-toggle {
+  display: flex;
+  gap: 2px;
+}
+
+.mode-btn {
+  padding: 3px 10px;
+  border: 1px solid #ccc;
+  background: #fff;
+  cursor: pointer;
+  font-size: 12px;
+  color: #555;
+  transition: background 0.15s;
+}
+
+.mode-btn:first-child {
+  border-radius: 4px 0 0 4px;
+}
+
+.mode-btn:last-child {
+  border-radius: 0 4px 4px 0;
+}
+
+.mode-btn.active {
+  background: #2563eb;
+  color: #fff;
+  border-color: #1d4ed8;
+}
+
+/* MathQuill field */
+#mathquill-field {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 8px 12px;
+  min-height: 44px;
+  background: #fff;
+  font-size: 18px;
+}
+
+#mathquill-field .mq-editable-field {
+  min-height: 30px;
+}
+
+/* LaTeX preview row */
+#latex-preview-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+#latex-preview {
+  flex: 1;
+  padding: 4px 8px;
+  background: #f0f0f0;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #555;
+  overflow-x: auto;
+  white-space: nowrap;
+  min-height: 24px;
+}
+
+/* Symbol palette */
+#symbol-palette {
+  margin-top: 10px;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.symbol-category {
+  margin-bottom: 8px;
+}
+
+.symbol-category h4 {
+  font-size: 11px;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.symbol-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+
+.symbol-btn {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 16px;
+  color: #333;
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.symbol-btn:hover {
+  background: #e0e8ff;
+  border-color: #99b3ff;
+}
+
+.symbol-btn[title]::after {
+  content: none;
+}

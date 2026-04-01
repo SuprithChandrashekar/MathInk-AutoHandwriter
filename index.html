@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Text to Handwriting — with Math</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat&family=Homemade+Apple&family=Indie+Flower&family=Patrick+Hand&display=swap" rel="stylesheet">
+
+  <!-- MathQuill CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mathquill@0.10.1/build/mathquill.css">
+
+  <!-- App CSS -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/paper.css">
+  <link rel="stylesheet" href="css/equation-editor.css">
+  <link rel="stylesheet" href="css/dark-mode.css">
+
+  <!-- Custom Font -->
+  <style>
+    @font-face {
+      font-family: 'QEBradenHill';
+      src: url('https://www.quantumenterprises.co.uk/handwriting-fonts/fontvault/QEBradenHill.ttf') format('truetype');
+      font-display: swap;
+    }
+  </style>
+
+  <!-- MathJax Config + Load -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['\\(', '\\)']],
+        displayMath: [['\\[', '\\]']],
+      },
+      svg: {
+        fontCache: 'global',
+      },
+      startup: {
+        ready: function () {
+          MathJax.startup.defaultReady();
+          window.mathJaxReady = true;
+          document.dispatchEvent(new Event('mathjax-ready'));
+        }
+      }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+</head>
+<body>
+
+  <!-- ===== TOOLBAR ===== -->
+  <header id="toolbar">
+    <div class="toolbar-group" id="toolbar-file">
+      <label class="toolbar-label">Font</label>
+      <select id="font-select">
+        <option value="QEBradenHill" selected>QEBradenHill</option>
+        <option value="Homemade Apple">Homemade Apple</option>
+        <option value="Caveat">Caveat</option>
+        <option value="Patrick Hand">Patrick Hand</option>
+        <option value="Indie Flower">Indie Flower</option>
+      </select>
+
+      <label class="toolbar-label">Size</label>
+      <input type="number" id="font-size" value="18" min="10" max="36" step="1">
+
+      <label class="toolbar-label">Ink</label>
+      <select id="ink-color">
+        <option value="#0000cc" selected>Blue</option>
+        <option value="#111111">Black</option>
+      </select>
+    </div>
+
+    <div class="toolbar-group" id="toolbar-format">
+      <button class="toolbar-btn" data-insert="**" title="Bold (wrap selection)">B</button>
+      <button class="toolbar-btn" data-insert="*" title="Italic (wrap selection)"><em>I</em></button>
+      <button class="toolbar-btn" data-insert-line="# " title="Heading 1">H1</button>
+      <button class="toolbar-btn" data-insert-line="## " title="Heading 2">H2</button>
+      <button class="toolbar-btn" data-insert-line="- " title="Bullet list">&#8226;</button>
+    </div>
+
+    <div class="toolbar-group" id="toolbar-math">
+      <button class="toolbar-btn" id="toggle-equation-editor" title="Equation Editor">&#8721; Math</button>
+    </div>
+
+    <div class="toolbar-group" id="toolbar-paper">
+      <label class="toolbar-label">Paper</label>
+      <select id="paper-style">
+        <option value="ruled" selected>Ruled</option>
+        <option value="grid">Grid</option>
+        <option value="dotted">Dotted</option>
+        <option value="blank">Blank</option>
+        <option value="custom">Custom...</option>
+      </select>
+
+      <label class="toolbar-label">Size</label>
+      <select id="page-size">
+        <option value="a4" selected>A4</option>
+        <option value="letter">Letter</option>
+      </select>
+
+      <input type="file" id="bg-upload" accept="image/*" hidden>
+      <button class="toolbar-btn" id="bg-upload-btn" title="Upload background image">BG</button>
+    </div>
+
+    <div class="toolbar-group" id="toolbar-spacing">
+      <label class="toolbar-label">Letter</label>
+      <input type="range" id="letter-spacing" min="0" max="5" step="0.5" value="1">
+      <label class="toolbar-label">Word</label>
+      <input type="range" id="word-spacing" min="0" max="10" step="0.5" value="3">
+      <label class="toolbar-label">Line</label>
+      <input type="range" id="line-height" min="1.2" max="3" step="0.1" value="1.8">
+    </div>
+
+    <div class="toolbar-group" id="toolbar-export">
+      <button class="toolbar-btn" id="upload-image-btn" title="Upload image/diagram">IMG</button>
+      <input type="file" id="image-upload" accept="image/*" hidden>
+      <button class="toolbar-btn primary" id="generate-pdf" title="Generate PDF">PDF</button>
+      <button class="toolbar-btn" id="dark-mode-toggle" title="Toggle dark mode">Dark</button>
+    </div>
+  </header>
+
+  <!-- ===== WORKSPACE ===== -->
+  <main id="workspace">
+    <!-- Input Panel -->
+    <section id="input-panel">
+      <textarea id="text-input" placeholder="Type your notes here using Markdown...&#10;&#10;Use $...$ for inline math and $$...$$ for block math.&#10;&#10;Example:&#10;# Calculus Notes&#10;&#10;The derivative of $f(x) = x^2$ is $f'(x) = 2x$.&#10;&#10;$$\int_0^1 x\,dx = \frac{1}{2}$$&#10;&#10;- **Important**: chain rule&#10;- *Remember* the product rule"></textarea>
+
+      <!-- Equation Editor Panel -->
+      <div id="equation-editor-panel" class="hidden">
+        <div id="equation-editor-header">
+          <span>Equation Editor</span>
+          <div id="insert-mode-toggle">
+            <button class="mode-btn active" data-mode="inline">Inline $...$</button>
+            <button class="mode-btn" data-mode="block">Block $$...$$</button>
+          </div>
+          <button id="close-equation-editor" title="Close">&times;</button>
+        </div>
+        <div id="mathquill-field"></div>
+        <div id="latex-preview-row">
+          <code id="latex-preview"></code>
+          <button id="insert-equation" class="toolbar-btn primary">Insert</button>
+        </div>
+        <div id="symbol-palette"></div>
+      </div>
+    </section>
+
+    <!-- Preview Panel -->
+    <section id="preview-panel">
+      <div id="preview-header">
+        <span id="page-count">Page 1 of 1</span>
+      </div>
+      <div id="pages-container"></div>
+    </section>
+  </main>
+
+  <!-- Off-screen render area for html2canvas -->
+  <div id="render-area" aria-hidden="true"></div>
+
+  <!-- External JS Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathquill@0.10.1/build/mathquill.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
+  <!-- App Modules (load order matters) -->
+  <script src="js/utils.js"></script>
+  <script src="js/paper-manager.js"></script>
+  <script src="js/markdown-parser.js"></script>
+  <script src="js/realism.js"></script>
+  <script src="js/renderer.js"></script>
+  <script src="js/pagination.js"></script>
+  <script src="js/preview.js"></script>
+  <script src="js/equation-editor.js"></script>
+  <script src="js/image-upload.js"></script>
+  <script src="js/dark-mode.js"></script>
+  <script src="js/pdf-export.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
