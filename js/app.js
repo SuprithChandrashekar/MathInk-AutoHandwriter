@@ -12,6 +12,7 @@ const AppState = {
   lineHeight: 1.8,
   paperStyle: 'ruled',
   pageSize: 'a4',
+  autoPageBreak: true,
   customBackground: null,
   darkMode: false,
   embeddedImages: [],
@@ -21,7 +22,7 @@ const AppState = {
   // Load QEBradenHill font
   await Utils.loadFontFace(
     'QEBradenHill',
-    'https://www.quantumenterprises.co.uk/handwriting-fonts/fontvault/QEBradenHill.ttf'
+    'fonts/QEBradenHill.ttf'
   );
 
   // Initialize all modules
@@ -69,6 +70,16 @@ function wireToolbarEvents() {
     AppState.pageSize = val;
     Preview.scheduleUpdate();
   });
+
+  // Auto Page Break
+  const autoPageBreakEl = document.getElementById('auto-page-break');
+  if (autoPageBreakEl) {
+    AppState.autoPageBreak = autoPageBreakEl.checked;
+    autoPageBreakEl.addEventListener('change', (e) => {
+      AppState.autoPageBreak = e.target.checked;
+      Preview.scheduleUpdate();
+    });
+  }
 
   // Letter spacing
   bindRange('letter-spacing', (val) => {

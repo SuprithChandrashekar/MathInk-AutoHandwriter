@@ -23,31 +23,51 @@
   <style>
     @font-face {
       font-family: 'QEBradenHill';
-      src: url('https://www.quantumenterprises.co.uk/handwriting-fonts/fontvault/QEBradenHill.ttf') format('truetype');
+      src: url('fonts/QEBradenHill.ttf') format('truetype');
       font-display: swap;
     }
   </style>
 
   <!-- MathJax Config + Load -->
+  <style>
+    /* Force MathJax CHTML output to inherit our surrounding custom font */
+    mjx-container, mjx-container * {
+      font-family: inherit !important;
+    }
+  </style>
   <script>
     window.MathJax = {
       tex: {
         inlineMath: [['\\(', '\\)']],
         displayMath: [['\\[', '\\]']],
       },
-      svg: {
-        fontCache: 'global',
+      chtml: {
+        matchFontHeight: false // Prevents weird scaling on custom handwriting fonts
       },
       startup: {
         ready: function () {
           MathJax.startup.defaultReady();
+          
+          MathJax.startup.document.inputJax[0].mmlFilters.add((args) => {
+            const walkTree = (node) => {
+              if (!node) return;
+              if (node.isKind('mi') || node.isKind('mn')) {
+                node.attributes.set('mathvariant', 'normal');
+              }
+              if (node.childNodes && node.childNodes.length > 0) {
+                for (const child of node.childNodes) walkTree(child);
+              }
+            };
+            walkTree(args.data);
+          });
+
           window.mathJaxReady = true;
           document.dispatchEvent(new Event('mathjax-ready'));
         }
       }
     };
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
 </head>
 <body>
 
@@ -79,6 +99,9 @@
       <button class="toolbar-btn" data-insert-line="# " title="Heading 1">H1</button>
       <button class="toolbar-btn" data-insert-line="## " title="Heading 2">H2</button>
       <button class="toolbar-btn" data-insert-line="- " title="Bullet list">&#8226;</button>
+      <label class="toolbar-label" style="display:flex; align-items:center; gap:4px; margin-left:8px; cursor:pointer;" title="Start a new page for ### Problem headings">
+        <input type="checkbox" id="auto-page-break" checked> Auto New Page
+      </label>
     </div>
 
     <div class="toolbar-group" id="toolbar-math">
