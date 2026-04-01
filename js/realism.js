@@ -25,8 +25,20 @@ const Realism = (() => {
       const node = walker.currentNode;
       const parent = node.parentElement;
       if (!parent) continue;
-      // Skip math and MathJax elements
+      // Skip math and MathJax elements (including all mjx-* CHTML elements)
       if (parent.closest('.math-inline, .math-block, mjx-container, [data-latex]')) continue;
+      if (parent.tagName && parent.tagName.toLowerCase().startsWith('mjx-')) continue;
+      // Walk up to check if any ancestor is an mjx-* element
+      let ancestor = parent;
+      let insideMath = false;
+      while (ancestor) {
+        if (ancestor.tagName && ancestor.tagName.toLowerCase().startsWith('mjx-')) {
+          insideMath = true;
+          break;
+        }
+        ancestor = ancestor.parentElement;
+      }
+      if (insideMath) continue;
       // Skip if already wrapped
       if (parent.classList && parent.classList.contains('hw-char')) continue;
       textNodes.push(node);

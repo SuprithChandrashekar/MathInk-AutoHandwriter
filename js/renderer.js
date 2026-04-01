@@ -49,37 +49,69 @@ const Renderer = (() => {
   }
 
   /**
-   * Convert MathJax SVG elements to <img> for html2canvas compatibility.
-   * Call this before html2canvas capture.
+   * Convert MathJax elements (CHTML or SVG) to <img> for reliable html2canvas capture.
+   * Captures each mjx-container individually with html2canvas, then replaces it with an <img>.
    */
-  async function convertMathSvgToImg(container) {
+  async function convertMathToImg(container) {
     const mjxContainers = container.querySelectorAll('mjx-container');
 
     for (const mjx of mjxContainers) {
-      const svg = mjx.querySelector('svg');
-      if (!svg) continue;
-
       try {
-        const svgData = new XMLSerializer().serializeToString(svg);
-        const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
-        const url = URL.createObjectURL(svgBlob);
+        // Check if it's SVG output first
+        const svg = mjx.querySelector('svg');
+        if (svg) {
+          const svgData = new XMLSerializer().serializeToString(svg);
+          const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+          const url = URL.createObjectURL(svgBlob);
 
+          const img = new Image();
+          await new Promise((resolve, reject) => {
+            img.onload = resolve;
+            img.onerror = reject;
+            img.src = url;
+          });
+
+          img.style.display = mjx.style.display || 'inline';
+          img.style.verticalAlign = 'middle';
+          img.style.width = svg.getAttribute('width') || 'auto';
+          img.style.height = svg.getAttribute('height') || 'auto';
+
+          mjx.parentNode.replaceChild(img, mjx);
+          URL.revokeObjectURL(url);
+          continue;
+        }
+
+        // CHTML output — capture with html2canvas
+        const isBlock = mjx.getAttribute('display') === 'true' ||
+                        window.getComputedStyle(mjx).display === 'block';
+
+        // Capture the mjx-container as a small canvas
+        const mathCanvas = await html2canvas(mjx, {
+          scale: 2,
+          backgroundColor: null,
+          useCORS: true,
+        });
+
+        const imgDataUrl = mathCanvas.toDataURL('image/png');
         const img = new Image();
         await new Promise((resolve, reject) => {
           img.onload = resolve;
           img.onerror = reject;
-          img.src = url;
+          img.src = imgDataUrl;
         });
 
-        img.style.display = mjx.style.display || 'inline';
+        // Preserve the rendered dimensions (at 1x, since canvas was 2x)
+        img.style.width = (mathCanvas.width / 2) + 'px';
+        img.style.height = (mathCanvas.height / 2) + 'px';
+        img.style.display = isBlock ? 'block' : 'inline';
         img.style.verticalAlign = 'middle';
-        img.style.width = svg.getAttribute('width') || 'auto';
-        img.style.height = svg.getAttribute('height') || 'auto';
+        if (isBlock) {
+          img.style.margin = '0.6em auto';
+        }
 
         mjx.parentNode.replaceChild(img, mjx);
-        URL.revokeObjectURL(url);
       } catch (err) {
-        console.warn('Failed to convert MathJax SVG to img:', err);
+        console.warn('Failed to convert MathJax element to img:', err);
       }
     }
   }
@@ -132,7 +164,7 @@ const Renderer = (() => {
     renderToPages,
     applyFontStyles,
     renderMath,
-    convertMathSvgToImg,
+    convertMathToImg,
     prepareMathElements,
   };
 })();

@@ -47,8 +47,8 @@ const PdfExport = (() => {
         // Ensure the page is visible for html2canvas
         renderArea.style.visibility = 'visible';
 
-        // Convert MathJax SVGs to images for html2canvas compatibility
-        await Renderer.convertMathSvgToImg(page);
+        // Convert MathJax elements to images for html2canvas compatibility
+        await Renderer.convertMathToImg(page);
 
         // Capture with html2canvas
         const canvas = await html2canvas(page, {
