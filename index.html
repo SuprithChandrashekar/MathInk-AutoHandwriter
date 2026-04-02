@@ -120,6 +120,7 @@
     <div class="toolbar-group" id="toolbar-export">
       <button class="toolbar-btn" id="upload-image-btn" title="Upload image/diagram">IMG</button>
       <input type="file" id="image-upload" accept="image/*" hidden>
+      <button class="toolbar-btn secondary" id="print-preview" title="Browser Print">Print</button>
       <button class="toolbar-btn primary" id="generate-pdf" title="Generate PDF">PDF</button>
       <button class="toolbar-btn" id="dark-mode-toggle" title="Toggle dark mode">Dark</button>
     </div>
@@ -149,6 +150,9 @@
         <div id="symbol-palette"></div>
       </div>
     </section>
+
+    <!-- Resizer -->
+    <div id="panel-resizer" title="Drag to resize"></div>
 
     <!-- Preview Panel -->
     <section id="preview-panel">

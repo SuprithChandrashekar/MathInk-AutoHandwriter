@@ -35,6 +35,7 @@ const AppState = {
 
   // Wire up toolbar controls
   wireToolbarEvents();
+  initResizer();
 
   // Trigger initial preview if there's default text
   Preview.scheduleUpdate();
@@ -130,4 +131,42 @@ function bindInput(id, onChange) {
 function bindRange(id, onChange) {
   const el = document.getElementById(id);
   if (el) el.addEventListener('input', (e) => onChange(e.target.value));
+}
+
+function initResizer() {
+  const resizer = document.getElementById('panel-resizer');
+  const inputPanel = document.getElementById('input-panel');
+  const workspace = document.getElementById('workspace');
+
+  if (!resizer || !inputPanel || !workspace) return;
+
+  resizer.addEventListener('mousedown', (e) => {
+    e.preventDefault();
+    resizer.classList.add('active');
+    
+    let startX = e.clientX;
+    let startWidth = inputPanel.offsetWidth;
+    
+    const mousemove = (e) => {
+      const diff = e.clientX - startX;
+      let newWidth = startWidth + diff;
+      
+      const minWidth = 300;
+      const maxWidth = workspace.offsetWidth * 0.8;
+      
+      if (newWidth < minWidth) newWidth = minWidth;
+      if (newWidth > maxWidth) newWidth = maxWidth;
+      
+      inputPanel.style.width = newWidth + 'px';
+    };
+    
+    const mouseup = () => {
+      resizer.classList.remove('active');
+      document.removeEventListener('mousemove', mousemove);
+      document.removeEventListener('mouseup', mouseup);
+    };
+    
+    document.addEventListener('mousemove', mousemove);
+    document.addEventListener('mouseup', mouseup);
+  });
 }

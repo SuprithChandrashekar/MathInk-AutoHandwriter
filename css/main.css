@@ -112,8 +112,21 @@ body {
   flex-direction: column;
   width: 40%;
   min-width: 300px;
-  border-right: 1px solid #ccc;
   background: #fff;
+}
+
+#panel-resizer {
+  width: 8px;
+  background: #ececec;
+  cursor: col-resize;
+  border-left: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+  z-index: 10;
+  transition: background 0.2s;
+}
+
+#panel-resizer:hover, #panel-resizer.active {
+  background: #d4d4d4;
 }
 
 #text-input {
@@ -184,4 +197,51 @@ body {
 #preview-panel::-webkit-scrollbar-thumb {
   background: #aaa;
   border-radius: 4px;
+}
+
+@media print {
+  @page {
+    margin: 0.1in;
+  }
+
+  body, html {
+    margin: 0;
+    padding: 0;
+    background: white !important;
+  }
+  
+  #toolbar,
+  #input-panel,
+  #panel-resizer,
+  #preview-header,
+  #render-area {
+    display: none !important;
+  }
+  
+  #workspace, #preview-panel, #pages-container {
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  
+  .page {
+    margin: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    page-break-after: always;
+    break-after: page;
+  }
+  
+  .page:last-child {
+    page-break-after: auto;
+    break-after: auto;
+  }
+  
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
 }
