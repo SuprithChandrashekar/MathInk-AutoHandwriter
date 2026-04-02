@@ -26,9 +26,52 @@ const Pagination = (() => {
    * Returns { firstPart: Node|null, remainder: Node|null }.
    */
   function splitBlock(block, availableHeight, containerWidth) {
-    // For non-text blocks (images, math, code), don't split
-    if (block.tagName === 'IMG' || block.classList.contains('math-block') || block.tagName === 'PRE') {
+    // For non-text blocks (images, math), don't split
+    if (block.tagName === 'IMG' || block.classList.contains('math-block')) {
       return { firstPart: null, remainder: block.cloneNode(true) };
+    }
+
+    if (block.tagName === 'PRE') {
+      const clone = block.cloneNode(true);
+      const codeNode = clone.querySelector('code');
+      const text = codeNode ? codeNode.textContent : clone.textContent || '';
+      const lines = text.split('\n');
+
+      if (lines.length <= 1) {
+        return { firstPart: null, remainder: block.cloneNode(true) };
+      }
+
+      let low = 0;
+      let high = lines.length;
+
+      while (low < high) {
+        const mid = Math.ceil((low + high) / 2);
+        const testBlock = block.cloneNode(true);
+        const testCode = testBlock.querySelector('code');
+        if (testCode) testCode.textContent = lines.slice(0, mid).join('\n');
+        else testBlock.textContent = lines.slice(0, mid).join('\n');
+        
+        const h = measureElementHeight(testBlock, containerWidth);
+        if (h <= availableHeight) {
+          low = mid;
+        } else {
+          high = mid - 1;
+        }
+      }
+
+      if (low === 0) return { firstPart: null, remainder: block.cloneNode(true) };
+
+      const firstPart = block.cloneNode(true);
+      const firstCode = firstPart.querySelector('code');
+      if (firstCode) firstCode.textContent = lines.slice(0, low).join('\n');
+      else firstPart.textContent = lines.slice(0, low).join('\n');
+
+      const remainder = block.cloneNode(true);
+      const remainderCode = remainder.querySelector('code');
+      if (remainderCode) remainderCode.textContent = lines.slice(low).join('\n');
+      else remainder.textContent = lines.slice(low).join('\n');
+
+      return { firstPart, remainder };
     }
 
     // For text blocks, try to split at word boundaries
@@ -120,44 +163,52 @@ const Pagination = (() => {
         // Fits on current page
         currentContent.appendChild(block.cloneNode(true));
         usedHeight += blockHeight;
-      } else if (usedHeight === 0 && blockHeight > contentHeight) {
-        // Single block taller than a page — split it
-        let remaining = block;
-        while (remaining) {
-          const available = usedHeight === 0 ? contentHeight : contentHeight - usedHeight;
-          const { firstPart, remainder } = splitBlock(remaining, available, contentWidth);
+      } else {
+        if (usedHeight > 0) {
+          // Doesn't fit or forced new page - start a new page
+          pages.push(currentPage);
+          currentPage = PaperManager.createPageElement(appState);
+          currentContent = currentPage.querySelector('.page-content-area');
+          Renderer.applyFontStyles(currentContent, appState);
+          usedHeight = 0;
+        }
 
-          if (firstPart) {
-            currentContent.appendChild(firstPart);
-          }
+        // Now we are at the top of a page
+        if (blockHeight <= contentHeight) {
+          currentContent.appendChild(block.cloneNode(true));
+          usedHeight = blockHeight;
+        } else {
+          // Single block taller than a page — split it
+          let remaining = block;
+          while (remaining) {
+            const available = contentHeight - usedHeight;
+            const { firstPart, remainder } = splitBlock(remaining, available, contentWidth);
 
-          if (remainder) {
-            pages.push(currentPage);
-            currentPage = PaperManager.createPageElement(appState);
-            currentContent = currentPage.querySelector('.page-content-area');
-            Renderer.applyFontStyles(currentContent, appState);
-            usedHeight = 0;
-            remaining = remainder;
+            if (firstPart) {
+              currentContent.appendChild(firstPart);
+              usedHeight += measureElementHeight(firstPart, contentWidth);
+            }
 
-            // Check if remainder fits on a new page
-            const remHeight = measureElementHeight(remainder, contentWidth);
-            if (remHeight <= contentHeight) {
-              currentContent.appendChild(remainder.cloneNode(true));
-              usedHeight = remHeight;
+            if (remainder) {
+              pages.push(currentPage);
+              currentPage = PaperManager.createPageElement(appState);
+              currentContent = currentPage.querySelector('.page-content-area');
+              Renderer.applyFontStyles(currentContent, appState);
+              usedHeight = 0;
+              remaining = remainder;
+
+              // Check if remainder fits on a new page
+              const remHeight = measureElementHeight(remainder, contentWidth);
+              if (remHeight <= contentHeight) {
+                currentContent.appendChild(remainder.cloneNode(true));
+                usedHeight = remHeight;
+                remaining = null;
+              }
+            } else {
               remaining = null;
             }
-          } else {
-            remaining = null;
           }
         }
-      } else {
-        // Doesn't fit — start a new page
-        pages.push(currentPage);
-        currentPage = PaperManager.createPageElement(appState);
-        currentContent = currentPage.querySelector('.page-content-area');
-        Renderer.applyFontStyles(currentContent, appState);
-        currentContent.appendChild(block.cloneNode(true));
-        usedHeight = blockHeight;
       }
     }
 
