@@ -188,9 +188,7 @@ body {
 
 @media print {
   @page {
-    margin: 0;
-    size: auto;
-  }
+    margin: 0.1in;
   
   body, html {
     margin: 0;
