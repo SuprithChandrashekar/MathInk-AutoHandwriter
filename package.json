@@ -1,4 +1,5 @@
 {
+  "name": "mathink-notes",
   "dependencies": {
     "marked": "^17.0.5",
     "playwright": "^1.59.0"
