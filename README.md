@@ -70,7 +70,7 @@ Built with MathQuill:
 ## Project structure
 
 ```text
-AutoResumeGenerator/
+mathink-notes/
 ├── index.html
 ├── css/
 │   ├── main.css
@@ -158,4 +158,3 @@ npx playwright install
 ## Rename summary
 
 This project has been renamed in documentation and package metadata from an auto-resume generator concept to **MathInk Notes**, focused on converting equation-heavy Markdown into human-like handwritten notes.
-
